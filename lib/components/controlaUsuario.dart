@@ -1,22 +1,30 @@
 import 'package:http/http.dart' as http;
 import 'package:whatsappcentral/models/autenticacao.dart';
-import 'package:flutter/material.dart';
-import 'package:whatsappcentral/models/customer.dart';
 import 'dart:async';
+import 'dart:convert';
 
 class ControlaUsuario {
   Future<String> conectaProtheus() async {
-    var response = await http.post(Uri.parse(Autenticacao.url));
+    var response = await http.post(Uri.parse(Autenticacao.urlLogin));
 
     if (response.statusCode == 201) {
-      return response.body;
+      // final decodedMap = json.decode(response.body);
+      final decodedMap = jsonDecode(response.body);
+
+      print("JSon manipulado ${decodedMap["access_token"]}");
+
+      // print("JSon manipulado  ${jsonDecode(token)} ");
+
+      return decodedMap["access_token"];
     } else {
       return "";
     }
   }
 
-  String getToken() {
-    String token = this.conectaProtheus().toString();
+  Future<String> getToken() async {
+    String token = '';
+
+    await this.conectaProtheus().then((value) => token = value.toString());
 
     return token;
   }

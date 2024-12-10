@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../components/controlaUsuario.dart';
+import '../models/autenticacao.dart';
+import 'package:http/http.dart' as http;
 import 'list_customers.dart';
-import '../models/customer.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,15 +14,35 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final List<ListCustomers> _listCustomers = [];
 
-  void geraTokenProtheus() {
-    var token = '';
+  void geraTokenProtheus() async {
+    const url = 'http://192.168.2.12:8083/rest/app/customers/123';
+    String token = '';
 
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => const ListCustomers()));
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const ListaClientesScreen()));
-    // ControlaUsuario conexao = ControlaUsuario();
+    // Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (BuildContext context) => const ListCustomers()));
+
+    // // Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const ListaClientesScreen()));
+
+    ControlaUsuario conexao = ControlaUsuario();
+
+    await conexao.getToken().then((value) => token = value);
+
+    print("Token: ${token}");
+
+    Map<String, String> request = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+
+    final response = await http
+        .get(
+          Uri.parse('http://192.168.2.12:8083/rest/app/customers/123'),
+          headers: request,
+          // body: jsonEncode(infoCustomer),
+        )
+        .then((_) => print("Passou aqui agora.... ${token}"));
 
     // // token = conexao.conectaProtheus() as String;
     // conexao.conectaProtheus().then((value) {

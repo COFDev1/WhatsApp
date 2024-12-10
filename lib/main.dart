@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'view/logins_screen.dart';
-import 'view/list_customers.dart';
 
 void main() {
   runApp(const MyApp());
