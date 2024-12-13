@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/customer.dart';
 import '../components/custom_item.dart';
 import '../data/dummy_data.dart';
+import '../view/logins_screen.dart';
 
 class ListCustomers extends StatelessWidget {
   const ListCustomers({super.key});
@@ -16,7 +17,14 @@ class ListCustomers extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => print("Teste"),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LoginPage(),
+                ),
+              );
+            },
           )
         ],
       ),

@@ -23,4 +23,22 @@ class ControlaUsuario {
       throw Exception("Falha ao autenticar no Protheus 01 : $e");
     }
   }
+
+  Future<String?> validUser() async {
+    var response = await http
+        .post(Uri.parse(Autenticacao.urlSeller))
+        .timeout(const Duration(seconds: 3));
+
+    try {
+      if (response.statusCode == 200) {
+        final seller = jsonDecode(response.body);
+
+        print("Codigo do retorno da conexao: ${seller["seller"]}");
+
+        return seller;
+      }
+    } catch (e) {
+      return ("Usuário/senha inválido: $e");
+    }
+  }
 }

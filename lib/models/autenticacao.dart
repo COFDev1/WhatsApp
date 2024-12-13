@@ -4,4 +4,5 @@ class Autenticacao {
   static const senha = 'Oft3870515';
   static const urlLogin = urlBase +
       "api/oauth2/v1/token?grant_type=password&password=${senha}&username=${usuario}";
+  static const urlSeller = urlBase + "app/customers/";
 }
