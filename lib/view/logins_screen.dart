@@ -3,7 +3,6 @@ import '../components/controlaUsuario.dart';
 import '../models/autenticacao.dart';
 import 'package:http/http.dart' as http;
 import 'list_customers.dart';
-import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -45,7 +44,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void login() async {
-    String token = '';
+    String token = "";
+    String seller = "";
 
     ControlaUsuario conexao = ControlaUsuario();
 
@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         throw Exception();
       }
     } catch (e) {
-      throw showDialog<void>(
+      throw showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text("Ocorreu um erro!"),
@@ -73,14 +73,42 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
 
-    print("Token gerado: ${token}");
+    await conexao
+        .validUser(
+          user.text.trim(),
+          senha.text.trim(),
+          token,
+        )
+        .then(
+          (value) =>
+              seller = value.runtimeType == String ? value.toString() : seller,
+        );
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ListCustomers(),
-      ),
-    );
+    if (seller != null && seller.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ListCustomers(
+            token: token,
+            sales: seller,
+          ),
+        ),
+      );
+    } else {
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Atenção"),
+          content: const Text("Usuário / Senha inválido"),
+          actions: [
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   registrar() async {
@@ -114,10 +142,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
                   child: TextFormField(
                     controller: user,
-                    style: TextStyle(color: Colors.blue, fontSize: 30),
+                    // style: TextStyle(color: Colors.blue, fontSize: 30),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: "Usuário",
@@ -183,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                                 padding: EdgeInsets.all(16.0),
                                 child: Text(
                                   actionButton,
-                                  style: TextStyle(fontSize: 20),
+                                  // style: TextStyle(fontSize: 20),
                                 ),
                               ),
                             ],

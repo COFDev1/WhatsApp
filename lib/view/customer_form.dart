@@ -22,6 +22,12 @@ class _CustomerFormState extends State<CustomerForm> {
     const String token =
         "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBKd3RQdWJsaWNLZXlGb3IyNTYifQ.eyJpc3MiOiJUT1RWUy1BRFZQTC1GV0pXVCIsInN1YiI6Implc3NlIiwiaWF0IjoxNzMzNzU0MDM1LCJ1c2VyaWQiOiIwMDAwNjEiLCJleHAiOjE3MzM3NTc2MzUsImVudklkIjoiUDEyXzMzX0hPTSJ9.TeQ4f8AlBb8X04_DtVXluFUUePnlhmBa1q0PIkwThVnqn6MbslH5NLaM5ZeTn48uIayzyJtVbdTHwLJk8BoV-F2XQ5coKTWIYEvOAP04LqFaPdpRAj1Ecok68atVDmHj58dEzvGQAdpERQVnVClS7wcU-tydIbBGNq8HiOP0KT9wO5Y_WrdhXnscibfayvVtseQ-zMOG6C7zQUDDvwAkGgziajmu8gtZIGawrfm4qIccfrmDMNJfDTJS7u8mDbRjx3-cvn3E9ofd-wJYm2tVmuDwiPz5Hmn2Za_EmjcKtAiOqVbfdMMsMFNlXWCVmQIJSQF0xGwR3I9AQfbrYojA6g";
 
+    Map<String, dynamic> body = {};
+    body["user"] = "fernando.lopez";
+    body["password"] = "031019";
+
+    var teste = JsonEncoder().convert(body);
+
     Map<String, String> request = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token'

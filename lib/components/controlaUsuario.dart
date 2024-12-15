@@ -24,10 +24,25 @@ class ControlaUsuario {
     }
   }
 
-  Future<String?> validUser() async {
-    var response = await http
-        .post(Uri.parse(Autenticacao.urlSeller))
-        .timeout(const Duration(seconds: 3));
+  Future<String?> validUser(String user, String password, String token) async {
+    Map<String, String> dataCustomer = {};
+    dataCustomer["user"] = user;
+    dataCustomer["password"] = password;
+
+    Map<String, String> request = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+
+    // var response = await http
+    //     .post(Uri.parse(Autenticacao.urlSeller))
+    //     .timeout(const Duration(seconds: 3));
+
+    var response = await http.post(
+      Uri.parse(Autenticacao.urlSeller),
+      headers: request,
+      body: jsonEncode(dataCustomer),
+    );
 
     try {
       if (response.statusCode == 200) {
@@ -35,7 +50,7 @@ class ControlaUsuario {
 
         print("Codigo do retorno da conexao: ${seller["seller"]}");
 
-        return seller;
+        return jsonDecode(response.body)["seller"].toString();
       }
     } catch (e) {
       return ("Usuário/senha inválido: $e");
