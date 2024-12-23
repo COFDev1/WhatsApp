@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:whatsappcentral/utils/app_routes.dart';
+import 'package:whatsappcentral/view/list_contact.dart';
+
 import 'view/logins_screen.dart';
 
 void main() {
@@ -17,6 +20,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: LoginPage(), // ListCustomers()
+        routes: {
+          AppRoutes.listContact: (ctx) => const ListContacts(),
+        },
         debugShowCheckedModeBanner: false);
   }
 }

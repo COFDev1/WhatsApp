@@ -11,29 +11,29 @@ class CustomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: (MediaQuery.of(context).size.height) * 0.8,
-      child: listCustomer.isEmpty
-          ? Column(
-              children: [
-                const SizedBox(height: 20),
-                Text(
-                  'Nenhuma cliente associado!',
-                  style: Theme.of(context).textTheme.headline6,
+    return listCustomer.isEmpty
+        ? Column(
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'Nenhuma cliente associado!',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 200,
+                child: Image.asset(
+                  'assets/images/waiting.png',
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 200,
-                  child: Image.asset(
-                    'assets/images/waiting.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            )
-          : Container(
+              ),
+            ],
+          )
+        : LayoutBuilder(builder: (ctx, constraint) {
+            return Container(
+              height: constraint.maxHeight * 0.3,
               color: Colors.grey[200],
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: ListView.builder(
                 itemCount: listCustomer.length,
                 itemBuilder: (ctx, index) {
@@ -78,7 +78,7 @@ class CustomItem extends StatelessWidget {
                   );
                 },
               ),
-            ),
-    );
+            );
+          });
   }
 }

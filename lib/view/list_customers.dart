@@ -10,7 +10,11 @@ class ListCustomers extends StatefulWidget {
   final String token;
   final String sales;
 
-  const ListCustomers({required this.token, required this.sales, super.key});
+  const ListCustomers({
+    required this.token,
+    required this.sales,
+    super.key,
+  });
 
   @override
   State<ListCustomers> createState() => _ListCustomersState();
@@ -87,31 +91,46 @@ class _ListCustomersState extends State<ListCustomers> {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: (loading)
-              ? [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.blue,
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: (loading)
+                  ? [
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const Text("Aguarde...Carregando os clientes..."),
-                ]
-              : [
-                  InkWell(
-                    child: CustomItem(listCustomer: listCustomers),
-                  )
-                ],
-        ),
+                      const Text("Aguarde...Carregando os clientes..."),
+                    ]
+                  : [
+                      SizedBox(
+                        height: (MediaQuery.of(context).size.height) * 0.8,
+                        child: InkWell(
+                          child: CustomItem(listCustomer: listCustomers),
+                        ),
+                      ),
+                      SizedBox(
+                        height: (MediaQuery.of(context).size.height) * 0.1,
+                        child: FloatingActionButton(
+                          child: const Icon(Icons.add),
+                          onPressed: () => print("Ok..."),
+                          elevation: 5,
+                        ),
+                      ),
+                    ],
+            ),
+          ),
+        ],
       ),
     );
   }

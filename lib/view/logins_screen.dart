@@ -111,17 +111,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  registrar() async {
-    // setState(() => loading = true);
-    // try {
-    //   await context.read<AuthService>().registrar(email.text, senha.text);
-    // } on AuthException catch (e) {
-    //   setState(() => loading = false);
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(SnackBar(content: Text(e.message)));
-    // }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,8 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                       if (formKey.currentState!.validate()) {
                         if (isLogin) {
                           login();
-                        } else {
-                          registrar();
                         }
                       }
                     },

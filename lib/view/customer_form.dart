@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/models/customer.dart';
+import 'package:whatsappcentral/components/contact_form.dart';
+import 'package:http/http.dart' as http;
+import 'dart:ffi';
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'package:whatsappcentral/utils/app_routes.dart';
+
+enum FilterOptions {
+  add_contact,
+  list_contacts,
+}
 
 class CustomerForm extends StatefulWidget {
   Customer customer;
@@ -16,6 +25,16 @@ class CustomerForm extends StatefulWidget {
 class _CustomerFormState extends State<CustomerForm> {
   late final name = TextEditingController(text: widget.customer.name);
   late final whastApp = TextEditingController(text: widget.customer.whatsapp);
+
+  _openTransactionFormModal(BuildContext context) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (_) {
+        return ContactForm();
+      },
+    );
+  }
 
   void _save(Map<String, String> infoCustomer) async {
     const url = 'http://192.168.2.12:8083/rest/app/customers/';
@@ -47,59 +66,170 @@ class _CustomerFormState extends State<CustomerForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.customer.name),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: TextField(
-                controller: name,
-                onSubmitted: (_) => {},
-                decoration: InputDecoration(labelText: 'Nome'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: TextField(
-                controller: whastApp,
-                onSubmitted: (_) => {},
-                decoration: InputDecoration(labelText: 'WhatsApp'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    child: Text(
-                      "Gravar",
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.button?.color,
-                      ),
-                    ),
-                    onPressed: () {
-                      Map<String, String> dataCustomer = {};
-                      dataCustomer["id"] = widget.customer.id;
-                      dataCustomer["name"] = name.text;
-                      dataCustomer["whatasApp"] = whastApp.text;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data...')),
-                      );
-                      return _save(dataCustomer);
-                    },
-                  ),
-                ],
+    final mediaQuery = MediaQuery.of(context);
+    final actions = [];
+
+    final PreferredSizeWidget appBar = AppBar(
+      title: Text(widget.customer.name),
+      actions: [
+        PopupMenuButton(
+          icon: const Icon(Icons.more_vert),
+          itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: FilterOptions.list_contacts,
+              child: ListTile(
+                leading: Icon(Icons.contact_phone),
+                title: Text("Meus Contatos"),
               ),
             ),
           ],
-        ),
-      ),
+          onSelected: (FilterOptions selectedValue) {
+            // if (selectedValue == FilterOptions.list_contacts) {
+            // _openTransactionFormModal(context);
+            // } else {
+            //   _openTransactionFormModal(context);
+            // }
+            Navigator.of(context).pushNamed(
+              AppRoutes.listContact,
+            );
+          },
+        )
+      ],
     );
+
+    final availableHeight = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
+
+    return Scaffold(
+        appBar: appBar,
+        body: LayoutBuilder(builder: (ctx, constraints) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: availableHeight * 0.90,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: name,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Nome'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'WhatsApp'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: name,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Nome'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'WhatsApp'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: name,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Nome'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'WhatsApp'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: name,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Nome'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'WhatsApp'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Teste'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: TextField(
+                            controller: whastApp,
+                            onSubmitted: (_) => {},
+                            decoration: InputDecoration(labelText: 'Teste 123'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }));
   }
 }
