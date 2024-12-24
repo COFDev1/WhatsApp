@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsappcentral/models/contact.dart';
 
 class ContactForm extends StatefulWidget {
   const ContactForm({super.key});
@@ -8,6 +9,8 @@ class ContactForm extends StatefulWidget {
 }
 
 class _ContactFormState extends State<ContactForm> {
+  String _valueDefault = "Tipo de Contato";
+
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _categoriaController = TextEditingController();
@@ -24,9 +27,9 @@ class _ContactFormState extends State<ContactForm> {
 
   void _dropDownItemSelected(String? novoItem) {
     setState(() {
-      novoItem = novoItem;
+      print("Valor atribuido: ${novoItem}");
+      _valueDefault = novoItem!;
     });
-
     // onChanged: (String string) => setState(() => selectedItem = string),
   }
 
@@ -47,12 +50,12 @@ class _ContactFormState extends State<ContactForm> {
               TextField(
                 controller: _nameController,
                 onSubmitted: (_) => {},
-                decoration: InputDecoration(labelText: 'Nome'),
+                decoration: const InputDecoration(labelText: "Nome"),
               ),
               TextField(
                 controller: _phoneController,
                 onSubmitted: (_) => {},
-                decoration: InputDecoration(labelText: 'Telefone'),
+                decoration: const InputDecoration(labelText: "Telefone"),
               ),
 
               Align(

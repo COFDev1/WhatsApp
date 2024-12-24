@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/models/customer.dart';
+import 'package:whatsappcentral/models/contact.dart';
 import 'package:whatsappcentral/components/contact_form.dart';
 import 'package:http/http.dart' as http;
-import 'dart:ffi';
 import 'dart:async';
 import 'dart:convert';
 
@@ -27,6 +27,8 @@ class _CustomerFormState extends State<CustomerForm> {
   late final whastApp = TextEditingController(text: widget.customer.whatsapp);
 
   _openTransactionFormModal(BuildContext context) {
+    final List<Contact> listContact = [];
+
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -77,21 +79,11 @@ class _CustomerFormState extends State<CustomerForm> {
           itemBuilder: (_) => [
             const PopupMenuItem(
               value: FilterOptions.list_contacts,
-              child: ListTile(
-                leading: Icon(Icons.contact_phone),
-                title: Text("Meus Contatos"),
-              ),
+              child: Text("Meus Contatos"),
             ),
           ],
-          onSelected: (FilterOptions selectedValue) {
-            // if (selectedValue == FilterOptions.list_contacts) {
-            // _openTransactionFormModal(context);
-            // } else {
-            //   _openTransactionFormModal(context);
-            // }
-            Navigator.of(context).pushNamed(
-              AppRoutes.listContact,
-            );
+          onSelected: (_) {
+            Navigator.of(context).pushNamed(AppRoutes.listContact);
           },
         )
       ],
