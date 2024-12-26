@@ -26,17 +26,17 @@ class _CustomerFormState extends State<CustomerForm> {
   late final name = TextEditingController(text: widget.customer.name);
   late final whastApp = TextEditingController(text: widget.customer.whatsapp);
 
-  _openTransactionFormModal(BuildContext context) {
-    final List<Contact> listContact = [];
+  // _openTransactionFormModal(BuildContext context) {
+  //   final List<Contact> listContact = [];
 
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (_) {
-        return ContactForm();
-      },
-    );
-  }
+  //   showModalBottomSheet(
+  //     isScrollControlled: true,
+  //     context: context,
+  //     builder: (_) {
+  //       return ContactForm();
+  //     },
+  //   );
+  // }
 
   void _save(Map<String, String> infoCustomer) async {
     const url = 'http://192.168.2.12:8083/rest/app/customers/';

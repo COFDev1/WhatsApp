@@ -3,25 +3,19 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
-class ContactItem extends StatefulWidget {
+class ContactItem extends StatelessWidget {
   final List<Contact> listContact;
+  const ContactItem({required this.listContact, super.key});
 
-  ContactItem({required this.listContact, super.key});
-
-  @override
-  State<ContactItem> createState() => _ContactItemState();
-}
-
-class _ContactItemState extends State<ContactItem> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (ctx, constraints) {
       return Container(
         height: constraints.maxHeight,
         child: ListView.builder(
-          itemCount: widget.listContact.length,
+          itemCount: listContact.length,
           itemBuilder: (ctx, index) {
-            final tr = widget.listContact[index];
+            final tr = listContact[index];
             print("Valor do indice ${index}");
             return Card(
               elevation: 5,
@@ -45,23 +39,12 @@ class _ContactItemState extends State<ContactItem> {
                     tr.name,
                     style: Theme.of(context).textTheme.headline6,
                   ),
-                  subtitle: Text("Teste"),
-                  trailing: MediaQuery.of(context).size.width > 480
-                      ? TextButton.icon(
-                          onPressed: () => print("ok"),
-                          icon: Icon(Icons.delete,
-                              color: Theme.of(context).errorColor),
-                          label: Text(
-                            "Excluir",
-                            style:
-                                TextStyle(color: Theme.of(context).errorColor),
-                          ),
-                        )
-                      : IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Theme.of(context).errorColor,
-                          onPressed: () => print("ok"),
-                        )),
+                  subtitle: Text(tr.phone),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    color: Theme.of(context).errorColor,
+                    onPressed: () => print("ok 2"),
+                  )),
             );
           },
         ),

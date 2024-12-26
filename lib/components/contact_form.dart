@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
 class ContactForm extends StatefulWidget {
-  const ContactForm({super.key});
+  final void Function(String, String) onSubmit;
+
+  const ContactForm({required this.onSubmit, super.key});
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -23,7 +25,12 @@ class _ContactFormState extends State<ContactForm> {
     "Residencial",
   ];
 
-  _submitForm() {}
+  _submitForm() {
+    final name = _nameController.text;
+    final phone = _phoneController.text;
+
+    widget.onSubmit(name, phone);
+  }
 
   void _dropDownItemSelected(String? novoItem) {
     setState(() {
