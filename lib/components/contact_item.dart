@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
 class ContactItem extends StatelessWidget {
   final List<Contact> listContact;
-  const ContactItem({required this.listContact, super.key});
+  final void Function(String)? onRemove;
+  final void Function(BuildContext, String) onOpenForm;
+
+  const ContactItem({
+    required this.listContact,
+    this.onRemove,
+    required this.onOpenForm,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final List<Contact> teste = [];
     return LayoutBuilder(builder: (ctx, constraints) {
       return Container(
         height: constraints.maxHeight,
         child: ListView.builder(
           itemCount: listContact.length,
           itemBuilder: (ctx, index) {
-            final tr = listContact[index];
-            print("Valor do indice ${index}");
+            final element = listContact[index];
+            print("Valor instanciado: ${element.name}");
+            teste.add(element);
             return Card(
               elevation: 5,
               margin: const EdgeInsets.symmetric(
@@ -24,11 +32,15 @@ class ContactItem extends StatelessWidget {
                 horizontal: 5,
               ),
               child: ListTile(
+                  onTap: () => onOpenForm(
+                        context,
+                        element.id,
+                      ),
                   leading: Padding(
                     padding: const EdgeInsets.all(6),
                     child: FittedBox(
                       child: Text(
-                        'R\$${tr.id}',
+                        '${element.id}',
                         style: const TextStyle(
                           color: Colors.white,
                         ),
@@ -36,14 +48,14 @@ class ContactItem extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    tr.name,
+                    element.name,
                     style: Theme.of(context).textTheme.headline6,
                   ),
-                  subtitle: Text(tr.phone),
+                  subtitle: Text(element.phone),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     color: Theme.of(context).errorColor,
-                    onPressed: () => print("ok 2"),
+                    onPressed: () => onRemove!(element.id),
                   )),
             );
           },

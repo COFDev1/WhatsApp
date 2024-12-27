@@ -1,13 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/components/contact_form.dart';
 import 'package:whatsappcentral/components/contact_item.dart';
-import 'package:whatsappcentral/data/dummy_data.dart';
 import 'package:whatsappcentral/models/contact.dart';
+import 'dart:math';
 
 class ListContacts extends StatefulWidget {
   List<Contact> lista;
+  // final void Function(String)? onRemove;
 
   ListContacts({
     required this.lista,
@@ -34,6 +33,11 @@ class _ListContactsState extends State<ListContacts> {
         name: 'Pedro',
         phone: '124882-458',
       ),
+      Contact(
+        id: 'c3',
+        name: 'Pedro Souza',
+        phone: '124882-458',
+      ),
     ];
   }
 
@@ -50,11 +54,29 @@ class _ListContactsState extends State<ListContacts> {
     Navigator.of(context).pop();
   }
 
-  _openContactFormModal(BuildContext context) {
+  List<Contact> _getContactById(String id) {
+    return (widget.lista.where((element) => element.id == id)).toList();
+  }
+
+  _removeContact(String id) {
+    setState(() {
+      widget.lista.removeWhere((element) => element.id == id);
+    });
+  }
+
+  _openContactFormModal(BuildContext context, [String id = ""]) {
+    final List<Contact> result = id.isEmpty ? [] : _getContactById(id);
+
+    print("Valor retornado: ${result}");
+    print("Tamanho retornado: ${result.length}");
+
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        return ContactForm(onSubmit: _addContact);
+        return ContactForm(
+          onSubmit: _addContact,
+          listContact: result,
+        );
       },
     );
   }
@@ -72,54 +94,6 @@ class _ListContactsState extends State<ListContacts> {
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    // widget.lista = [
-    // Contact(
-    //   id: 'c1',
-    //   name: 'Jose',
-    //   phone: '111245458',
-    // ),
-    // Contact(
-    //   id: 'c2',
-    //   name: 'Pedro',
-    //   phone: '124882-458',
-    // ),
-    // Contact(
-    //   id: 'c3',
-    //   name: 'Maria',
-    //   phone: '4567896879',
-    // ),
-    // Contact(
-    //   id: 'c4',
-    //   name: 'Amaral Santos',
-    //   phone: '45215455',
-    // ),
-    // Contact(
-    //   id: 'c5',
-    //   name: 'Caio Santos',
-    //   phone: '452457565',
-    // ),
-    // Contact(
-    //   id: 'c6',
-    //   name: 'Tatiane Silva',
-    //   phone: '457878528',
-    // ),
-    // Contact(
-    //   id: 'c7',
-    //   name: 'Sonia Costa',
-    //   phone: '4567879897',
-    // ),
-    // Contact(
-    //   id: 'c8',
-    //   name: 'Antonio Augusto',
-    //   phone: '456788258',
-    // ),
-    // Contact(
-    //   id: 'c9',
-    //   name: 'Jorge Alves',
-    //   phone: '456788258',
-    // ),
-    // ];
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -130,7 +104,7 @@ class _ListContactsState extends State<ListContacts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FittedBox(
+                    const FittedBox(
                       child: Text(
                         "Não há contatos a serem exibidos",
                         style: TextStyle(
@@ -144,7 +118,11 @@ class _ListContactsState extends State<ListContacts> {
               )
             : SizedBox(
                 height: availableHeight * 0.8,
-                child: ContactItem(listContact: widget.lista),
+                child: ContactItem(
+                  listContact: widget.lista,
+                  onRemove: _removeContact,
+                  onOpenForm: _openContactFormModal,
+                ),
               ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _openContactFormModal(context),

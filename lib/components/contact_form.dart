@@ -3,8 +3,13 @@ import 'package:whatsappcentral/models/contact.dart';
 
 class ContactForm extends StatefulWidget {
   final void Function(String, String) onSubmit;
+  final List<Contact>? listContact;
 
-  const ContactForm({required this.onSubmit, super.key});
+  const ContactForm({
+    required this.onSubmit,
+    this.listContact,
+    super.key,
+  });
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -12,7 +17,6 @@ class ContactForm extends StatefulWidget {
 
 class _ContactFormState extends State<ContactForm> {
   String _valueDefault = "Tipo de Contato";
-
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _categoriaController = TextEditingController();
@@ -25,6 +29,11 @@ class _ContactFormState extends State<ContactForm> {
     "Residencial",
   ];
 
+  void _editContact() {
+    _nameController.text = widget.listContact![0].name;
+    _phoneController.text = widget.listContact![0].phone;
+  }
+
   _submitForm() {
     final name = _nameController.text;
     final phone = _phoneController.text;
@@ -33,15 +42,23 @@ class _ContactFormState extends State<ContactForm> {
   }
 
   void _dropDownItemSelected(String? novoItem) {
-    setState(() {
-      print("Valor atribuido: ${novoItem}");
-      _valueDefault = novoItem!;
-    });
+    setState(
+      () {
+        _valueDefault = novoItem!;
+      },
+    );
     // onChanged: (String string) => setState(() => selectedItem = string),
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.listContact!.isNotEmpty) {
+      _editContact();
+    }
+    // int index = widget.listContact!.indexWhere((item) => item["id"] == "11");
+
+    // print( "Posição do registro ${index}");
+
     return SingleChildScrollView(
       child: Card(
         elevation: 5,
@@ -88,7 +105,8 @@ class _ContactFormState extends State<ContactForm> {
               TextField(
                 controller: _nivelContato,
                 onSubmitted: (_) => {},
-                decoration: InputDecoration(labelText: "Nível do Contato"),
+                decoration:
+                    const InputDecoration(labelText: "Nível do Contato"),
               ),
               // Text("Hint text", textAlign: TextAlign.end)
               Row(
