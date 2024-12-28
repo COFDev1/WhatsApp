@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import '../models/customer.dart';
-import '../view/customer_form.dart';
+import 'package:whatsappcentral/models/customer.dart';
+import 'package:whatsappcentral/view/customer_form.dart';
 
 class CustomItem extends StatelessWidget {
   final List<Customer> listCustomer;

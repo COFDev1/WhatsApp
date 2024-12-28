@@ -6,12 +6,8 @@ import 'dart:math';
 
 class ListContacts extends StatefulWidget {
   List<Contact> lista;
-  // final void Function(String)? onRemove;
 
-  ListContacts({
-    required this.lista,
-    super.key,
-  });
+  ListContacts({required this.lista, super.key});
 
   @override
   State<ListContacts> createState() => _ListContactsState();
@@ -38,19 +34,25 @@ class _ListContactsState extends State<ListContacts> {
         name: 'Pedro Souza',
         phone: '124882-458',
       ),
-    ];
+    ].toList();
   }
 
-  _addContact(String name, String phone) {
+  void _updateContact(String name, String phone, int index) {
     final newContact = Contact(
       id: Random().nextDouble().toString(),
       name: name,
       phone: phone,
     );
-    setState(() {
-      widget.lista.add(newContact);
-    });
 
+    if (index != -1) {
+      setState(() {
+        widget.lista[index] = newContact;
+      });
+    } else {
+      setState(() {
+        widget.lista.insert(0, newContact);
+      });
+    }
     Navigator.of(context).pop();
   }
 
@@ -64,18 +66,17 @@ class _ListContactsState extends State<ListContacts> {
     });
   }
 
-  _openContactFormModal(BuildContext context, [String id = ""]) {
-    final List<Contact> result = id.isEmpty ? [] : _getContactById(id);
-
-    print("Valor retornado: ${result}");
-    print("Tamanho retornado: ${result.length}");
+  _openContactFormModal(BuildContext context,
+      [String id = "", int index = -1]) {
+    final List<Contact> result = id.isEmpty ? [] : [widget.lista[index]];
 
     showModalBottomSheet(
       context: context,
       builder: (_) {
         return ContactForm(
-          onSubmit: _addContact,
+          onSubmit: _updateContact,
           listContact: result,
+          index: index,
         );
       },
     );

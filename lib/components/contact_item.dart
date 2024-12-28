@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
 class ContactItem extends StatelessWidget {
   final List<Contact> listContact;
   final void Function(String)? onRemove;
-  final void Function(BuildContext, String) onOpenForm;
+  final void Function(BuildContext, String, int) onOpenForm;
 
   const ContactItem({
     required this.listContact,
@@ -32,10 +34,7 @@ class ContactItem extends StatelessWidget {
                 horizontal: 5,
               ),
               child: ListTile(
-                  onTap: () => onOpenForm(
-                        context,
-                        element.id,
-                      ),
+                  onTap: () => onOpenForm(context, element.id, index),
                   leading: Padding(
                     padding: const EdgeInsets.all(6),
                     child: FittedBox(

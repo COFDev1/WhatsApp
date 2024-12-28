@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
+const List<String> list = <String>[
+  "Tipo de Contato",
+  "WhatsApp",
+  "Celular",
+  "Comercial",
+  "Residencial"
+];
+
 class ContactForm extends StatefulWidget {
-  final void Function(String, String) onSubmit;
+  // final void Function(String, String) onSubmit;
+  final void Function(String, String, int) onSubmit;
   final List<Contact>? listContact;
+  final int? index;
 
   const ContactForm({
     required this.onSubmit,
     this.listContact,
+    this.index,
     super.key,
   });
 
@@ -16,18 +27,10 @@ class ContactForm extends StatefulWidget {
 }
 
 class _ContactFormState extends State<ContactForm> {
-  String _valueDefault = "Tipo de Contato";
+  String dropdownValue = list.first;
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _categoriaController = TextEditingController();
   final _nivelContato = TextEditingController();
-  final _cidades = [
-    "Tipo de Contato",
-    "WhatsApp",
-    "Celular",
-    "Comercial",
-    "Residencial",
-  ];
 
   void _editContact() {
     _nameController.text = widget.listContact![0].name;
@@ -38,16 +41,11 @@ class _ContactFormState extends State<ContactForm> {
     final name = _nameController.text;
     final phone = _phoneController.text;
 
-    widget.onSubmit(name, phone);
-  }
-
-  void _dropDownItemSelected(String? novoItem) {
-    setState(
-      () {
-        _valueDefault = novoItem!;
-      },
+    widget.onSubmit(
+      name,
+      phone,
+      widget.index!,
     );
-    // onChanged: (String string) => setState(() => selectedItem = string),
   }
 
   @override
@@ -55,9 +53,6 @@ class _ContactFormState extends State<ContactForm> {
     if (widget.listContact!.isNotEmpty) {
       _editContact();
     }
-    // int index = widget.listContact!.indexWhere((item) => item["id"] == "11");
-
-    // print( "Posição do registro ${index}");
 
     return SingleChildScrollView(
       child: Card(
@@ -78,6 +73,7 @@ class _ContactFormState extends State<ContactForm> {
               ),
               TextField(
                 controller: _phoneController,
+                keyboardType: TextInputType.number,
                 onSubmitted: (_) => {},
                 decoration: const InputDecoration(labelText: "Telefone"),
               ),
@@ -89,15 +85,22 @@ class _ContactFormState extends State<ContactForm> {
                   child: Column(
                     children: [
                       DropdownButton<String>(
-                        items: _cidades.map((String dropDownStringItem) {
+                        value: dropdownValue,
+                        elevation: 16,
+                        onChanged: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            dropdownValue = value!;
+                          });
+                        },
+                        items:
+                            list.map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
-                            value: dropDownStringItem,
-                            child: Text(dropDownStringItem),
+                            value: value,
+                            child: Text(value),
                           );
                         }).toList(),
-                        onChanged: _dropDownItemSelected,
-                        value: "Tipo de Contato",
-                      ),
+                      )
                     ],
                   ),
                 ),
