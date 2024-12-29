@@ -56,10 +56,6 @@ class _ListContactsState extends State<ListContacts> {
     Navigator.of(context).pop();
   }
 
-  List<Contact> _getContactById(String id) {
-    return (widget.lista.where((element) => element.id == id)).toList();
-  }
-
   _removeContact(String id) {
     setState(() {
       widget.lista.removeWhere((element) => element.id == id);
