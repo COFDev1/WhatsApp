@@ -28,16 +28,19 @@ class ContactForm extends StatefulWidget {
 }
 
 class _ContactFormState extends State<ContactForm> {
-  final _formKey = GlobalKey<FormState>();
+  bool _lEdit = true;
   String dropdownValue = list.first;
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _nivelContato = TextEditingController();
+  final _descriptionContact = TextEditingController();
   final email = TextEditingController();
 
   void _editContact() {
     _nameController.text = widget.listContact![0].name;
     _phoneController.text = widget.listContact![0].phone;
+    _phoneController.text = widget.listContact![0].phone;
+    _lEdit = false;
   }
 
   _submitForm() {
@@ -58,7 +61,7 @@ class _ContactFormState extends State<ContactForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.listContact!.isNotEmpty) {
+    if (_lEdit && widget.listContact!.isNotEmpty) {
       _editContact();
     }
 
@@ -78,8 +81,9 @@ class _ContactFormState extends State<ContactForm> {
               children: [
                 TextFormField(
                   controller: _nameController,
+                  // initialValue: "Pedrao",
                   decoration: const InputDecoration(labelText: 'Nome'),
-                  textInputAction: TextInputAction.next,
+                  // textInputAction: TextInputAction.next,
                   maxLength: 30,
                   validator: (_name) {
                     final name = _name ?? '';
@@ -95,7 +99,6 @@ class _ContactFormState extends State<ContactForm> {
                     return null;
                   },
                 ),
-
                 TextFormField(
                   controller: _phoneController,
                   decoration: const InputDecoration(
@@ -105,7 +108,7 @@ class _ContactFormState extends State<ContactForm> {
                     FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                   ],
                   maxLength: 11,
-                  keyboardType: const TextInputType.numberWithOptions(),
+                  keyboardType: TextInputType.phone,
                   validator: (_phone) {
                     final phone = _phone ?? '';
 
@@ -114,81 +117,66 @@ class _ContactFormState extends State<ContactForm> {
                     }
 
                     if (phone.trim().length < 11) {
-                      return "Telefone precisa de 11 dígitos.";
+                      return "Telefone deve ter 11 dígitos.";
                     }
                     return null;
                   },
                 ),
-
                 Align(
                   alignment: Alignment.topLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Column(
-                      children: [
-                        // DropdownButton<String>(
-                        //   value: dropdownValue,
-                        //   elevation: 16,
-                        //   onChanged: (String? value) {
-                        //     // This is called when the user selects an item.
-                        //     setState(
-                        //       () {
-                        //         dropdownValue = value!;
-                        //       },
-                        //     );
-                        //   },
-                        //   items: list
-                        //       .map<DropdownMenuItem<String>>((String value) {
-                        //     return DropdownMenuItem<String>(
-                        //       value: value,
-                        //       child: Text(value),
-                        //     );
-                        //   }).toList(),
-                        // ),
-                        DropdownButtonFormField<String>(
-                          value: dropdownValue,
-                          // hint: Text('Select an option'),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                            });
-                          },
-                          validator: (String? value) {
-                            // if (value == null) {
-                            if (value == list.first) {
-                              return "Selecione uma opção válida";
-                            }
-                            return null;
-                          },
-                          items: list
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        )
-                      ],
+                    padding: const EdgeInsets.only(top: 5),
+                    child: DropdownButtonFormField<String>(
+                      value: dropdownValue,
+                      // hint: Text('Select an option'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownValue = newValue!;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == list.first) {
+                          return "Opção inválida";
+                        }
+                        return null;
+                      },
+                      items: list.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
-                TextField(
-                  controller: _nivelContato,
-                  onSubmitted: (_) => {},
-                  decoration:
-                      const InputDecoration(labelText: "Nível do Contato"),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: TextFormField(
+                    controller: _descriptionContact,
+                    decoration: const InputDecoration(
+                        labelText: "Descrição do Contato"),
+                    // textInputAction: TextInputAction.next,
+                    maxLength: 30,
+                    validator: (_description) {
+                      final description = _description ?? '';
+
+                      if (description.trim().isEmpty) {
+                        return "O preenchimento do campo Descrição do Contato é obrigatório.";
+                      }
+
+                      if (description.trim().length < 3) {
+                        return "Descrição do Contato precisa no mínimo de 10 letras.";
+                      }
+
+                      return null;
+                    },
+                  ),
                 ),
-                // Text("Hint text", textAlign: TextAlign.end)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     ElevatedButton(
-                      child: Text(
-                        "Gravar",
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.button?.color,
-                        ),
-                      ),
+                      child: Text("Gravar"),
                       onPressed: _submitForm,
                     ),
                   ],
