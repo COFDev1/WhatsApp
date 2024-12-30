@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:whatsappcentral/components/contact_form.dart';
 import 'package:whatsappcentral/components/contact_item.dart';
 import 'package:whatsappcentral/models/contact.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'dart:math';
 
 class ListContacts extends StatefulWidget {
-  List<Contact> lista;
+  List<Contact> lista = [];
 
   ListContacts({required this.lista, super.key});
 
@@ -18,23 +21,34 @@ class _ListContactsState extends State<ListContacts> {
   void initState() {
     super.initState();
 
-    widget.lista = [
-      Contact(
-        id: 'c1',
-        name: 'Jose',
-        phone: '111245458',
-      ),
-      Contact(
-        id: 'c2',
-        name: 'Pedro',
-        phone: '124882-458',
-      ),
-      Contact(
-        id: 'c3',
-        name: 'Pedro Souza',
-        phone: '124882-458',
-      ),
-    ].toList();
+    loadContact();
+  }
+
+  void loadContact() async {
+    Map<String, String> request = {
+      'Content-Type': 'application/json',
+    };
+    var url = "http://192.168.10.101:3001/contatos";
+
+    final response = await http.get(Uri.parse(url));
+
+    print("Lendo os dados retornados: ${response.body} ");
+
+    if (response.body == 'null') return;
+    var data = jsonDecode(response.body);
+    final List<Contact> teste = [];
+
+    data.forEach((element) {
+      teste.add(Contact(
+        id: element["id"],
+        name: element["name"],
+        phone: element["phone"],
+      ));
+    });
+    setState(() {
+      widget.lista = teste;
+    });
+    print("Valor retornado: ${widget.lista}");
   }
 
   void _updateContact(String name, String phone, int index) {
@@ -80,6 +94,8 @@ class _ListContactsState extends State<ListContacts> {
 
   @override
   Widget build(BuildContext context) {
+    bool dataOk = widget.lista.isEmpty;
+
     final mediaQuery = MediaQuery.of(context);
 
     final PreferredSizeWidget appBar = AppBar(

@@ -85,8 +85,8 @@ class _ContactFormState extends State<ContactForm> {
                   decoration: const InputDecoration(labelText: 'Nome'),
                   // textInputAction: TextInputAction.next,
                   maxLength: 30,
-                  validator: (_name) {
-                    final name = _name ?? '';
+                  validator: (value) {
+                    final name = value ?? '';
 
                     if (name.trim().isEmpty) {
                       return "Nome é obrigatório.";
@@ -109,8 +109,8 @@ class _ContactFormState extends State<ContactForm> {
                   ],
                   maxLength: 11,
                   keyboardType: TextInputType.phone,
-                  validator: (_phone) {
-                    final phone = _phone ?? '';
+                  validator: (value) {
+                    final phone = value ?? '';
 
                     if (phone.trim().isEmpty) {
                       return "Telefone é obrigatório.";
@@ -155,17 +155,16 @@ class _ContactFormState extends State<ContactForm> {
                     controller: _descriptionContact,
                     decoration: const InputDecoration(
                         labelText: "Descrição do Contato"),
-                    // textInputAction: TextInputAction.next,
                     maxLength: 30,
-                    validator: (_description) {
-                      final description = _description ?? '';
+                    validator: (value) {
+                      final description = value ?? '';
 
                       if (description.trim().isEmpty) {
                         return "O preenchimento do campo Descrição do Contato é obrigatório.";
                       }
 
-                      if (description.trim().length < 3) {
-                        return "Descrição do Contato precisa no mínimo de 10 letras.";
+                      if (description.trim().length < 6) {
+                        return "Descrição do Contato precisa ter,no mínimo, de 6 letras.";
                       }
 
                       return null;
@@ -176,8 +175,8 @@ class _ContactFormState extends State<ContactForm> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     ElevatedButton(
-                      child: Text("Gravar"),
                       onPressed: _submitForm,
+                      child: const Text("Gravar"),
                     ),
                   ],
                 ),
