@@ -73,13 +73,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
 
-    await conexao
-        .validUser(
-          user.text.trim(),
-          senha.text.trim(),
-          token,
-        )
-        .then(
+    await conexao.validUser(user.text.trim(), senha.text.trim(), token).then(
           (value) =>
               seller = value.runtimeType == String ? value.toString() : seller,
         );
@@ -154,8 +148,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: senha,
                     obscureText: true,
                     keyboardType: TextInputType.number,
-                    style: TextStyle(color: Colors.blue, fontSize: 30),
-                    decoration: InputDecoration(
+                    style: const TextStyle(color: Colors.blue, fontSize: 30),
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: "Senha",
                     ),

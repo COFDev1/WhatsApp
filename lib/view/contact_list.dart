@@ -17,38 +17,112 @@ class ListContacts extends StatefulWidget {
 }
 
 class _ListContactsState extends State<ListContacts> {
+  final String url = "http://192.168.10.101:3001/contatos/";
+  String filter = "";
+  bool allOk = false;
+
   @override
   void initState() {
     super.initState();
 
-    loadContact();
+    _list(id: "7");
   }
 
-  void loadContact() async {
-    Map<String, String> request = {
+  Future<bool> _list({String id = ""}) async {
+    final response = await http.get(Uri.parse(url + "${id}"));
+
+    allOk = response.statusCode == 200;
+
+    if (allOk) {
+      final List list;
+
+      final data = jsonDecode(response.body);
+
+      list = data is Map ? [jsonDecode(response.body)] : data;
+
+      widget.lista = [];
+
+      list.forEach((element) {
+        widget.lista.add(Contact(
+          id: element["id"],
+          name: element["name"],
+          phone: element["phone"],
+        ));
+        print("Elemento: $element");
+      });
+
+      setState(() {});
+    }
+    return allOk;
+  }
+
+  _update() {}
+
+  Future<bool> _updateDataContactApi(
+      {int type = 1, Map<String, dynamic>? req}) async {
+    // bool allOk = false;
+
+    Map<String, String> structDefault = {
       'Content-Type': 'application/json',
     };
-    var url = "http://192.168.10.101:3001/contatos";
 
-    final response = await http.get(Uri.parse(url));
+    // var url = "http://192.168.10.101:3001/contatos/";
 
-    print("Lendo os dados retornados: ${response.body} ");
+    widget.lista = [];
 
-    if (response.body == 'null') return;
-    var data = jsonDecode(response.body);
-    final List<Contact> teste = [];
+    switch (type) {
+      case 1:
+        final response = await http.get(Uri.parse(url));
 
-    data.forEach((element) {
-      teste.add(Contact(
-        id: element["id"],
-        name: element["name"],
-        phone: element["phone"],
-      ));
-    });
-    setState(() {
-      widget.lista = teste;
-    });
-    print("Valor retornado: ${widget.lista}");
+        // allOk = response.statusCode == 200;
+
+        // if (allOk) {
+        var data = jsonDecode(response.body);
+
+        //   data.forEach((element) {
+        //     widget.lista.add(Contact(
+        //       id: element["id"],
+        //       name: element["name"],
+        //       phone: element["phone"],
+        //     ));
+        //   });
+
+        //   setState(() {});
+        // }
+        break;
+
+      case 2:
+        var resBody = {};
+        resBody["name"] = "Carlinho da Silva";
+        resBody["phone"] = "27999405610";
+        resBody["tipo"] = "Celular";
+        resBody["descricao"] = "Secretaria";
+
+        print(jsonEncode(resBody));
+
+        // final response = await http.put(Uri.parse(url + "9"), body: jsonEncode(resBody));
+        final response =
+            await http.post(Uri.parse(url), body: jsonEncode(resBody));
+
+        allOk = response.statusCode == 200 || response.statusCode == 201;
+
+        if (allOk) {
+          var data = jsonDecode(response.body);
+          print("Retorno ${response.body}");
+        }
+        break;
+
+      case 3:
+        final response = await http.delete(Uri.parse(url));
+
+        allOk = response.statusCode == 200;
+
+        if (allOk) {
+          setState(() {});
+        }
+        break;
+    }
+    return allOk;
   }
 
   void _updateContact(String name, String phone, int index) {

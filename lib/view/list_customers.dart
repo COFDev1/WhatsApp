@@ -73,64 +73,71 @@ class _ListCustomersState extends State<ListCustomers> {
   @override
   Widget build(BuildContext context) {
     // final List<Customer> listCustomers = dummyCustomer.toList();
+    final mediaQuery = MediaQuery.of(context);
+    final PreferredSizeWidget appBar = AppBar(
+      title: const Text("Listagem de Clientes"),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LoginPage(),
+              ),
+            );
+          },
+        )
+      ],
+    );
+    final availableHeight = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Listagem de Clientes"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => LoginPage(),
-                ),
-              );
-            },
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: (loading)
-                  ? [
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.blue,
+    return SafeArea(
+      child: Scaffold(
+        appBar: appBar,
+        body: Column(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: (loading)
+                    ? [
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const Text("Aguarde...Carregando os clientes..."),
-                    ]
-                  : [
-                      SizedBox(
-                        height: (MediaQuery.of(context).size.height) * 0.8,
-                        child: InkWell(
-                          child: CustomItem(listCustomer: listCustomers),
+                        const Text("Aguarde...Carregando os clientes..."),
+                      ]
+                    : [
+                        SizedBox(
+                          height: availableHeight * 0.9,
+                          child: InkWell(
+                            child: CustomItem(listCustomer: listCustomers),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: (MediaQuery.of(context).size.height) * 0.1,
-                        child: FloatingActionButton(
-                          child: const Icon(Icons.add),
-                          onPressed: () => print("Ok..."),
-                          elevation: 5,
+                        SizedBox(
+                          height: availableHeight * 0.1,
+                          child: FloatingActionButton(
+                            onPressed: () => print("Ok..."),
+                            elevation: 5,
+                            child: const Icon(Icons.add),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
