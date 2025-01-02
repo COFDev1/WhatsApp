@@ -4,7 +4,6 @@ import 'package:whatsappcentral/components/contact_item.dart';
 import 'package:whatsappcentral/models/contact.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'dart:math';
 
 class ListContacts extends StatefulWidget {
@@ -25,7 +24,7 @@ class _ListContactsState extends State<ListContacts> {
   void initState() {
     super.initState();
 
-    _list(id: "7");
+    _list();
   }
 
   Future<bool> _list({String id = ""}) async {
@@ -34,21 +33,23 @@ class _ListContactsState extends State<ListContacts> {
     allOk = response.statusCode == 200;
 
     if (allOk) {
-      final List list;
+      final List newList;
 
       final data = jsonDecode(response.body);
 
-      list = data is Map ? [jsonDecode(response.body)] : data;
+      newList = data is Map ? [jsonDecode(response.body)] : data;
 
       widget.lista = [];
 
-      list.forEach((element) {
-        widget.lista.add(Contact(
-          id: element["id"],
-          name: element["name"],
-          phone: element["phone"],
-        ));
-        print("Elemento: $element");
+      newList.forEach((element) {
+        widget.lista.add(
+          Contact(
+              id: element["id"],
+              name: element["name"],
+              phone: element["phone"],
+              type: element["tipo"],
+              description: element["descricao"]),
+        );
       });
 
       setState(() {});
@@ -56,7 +57,19 @@ class _ListContactsState extends State<ListContacts> {
     return allOk;
   }
 
-  _update() {}
+  Future<bool> delete({String id = ""}) async {
+    final response = await http.delete(Uri.parse(url + "${id}"));
+
+    allOk = response.statusCode == 200;
+
+    If(allOk) {
+      setState(() {
+        widget.lista.removeWhere((element) => element.id == id);
+      });
+    }
+
+    return allOk;
+  }
 
   Future<bool> _updateDataContactApi(
       {int type = 1, Map<String, dynamic>? req}) async {
@@ -125,11 +138,14 @@ class _ListContactsState extends State<ListContacts> {
     return allOk;
   }
 
-  void _updateContact(String name, String phone, int index) {
+  void _updateContact(
+      String name, String phone, int index, String type, String description) {
     final newContact = Contact(
       id: Random().nextDouble().toString(),
       name: name,
       phone: phone,
+      type: type,
+      description: description,
     );
 
     if (index != -1) {
@@ -150,17 +166,18 @@ class _ListContactsState extends State<ListContacts> {
     });
   }
 
-  _openContactFormModal(BuildContext context,
-      [String id = "", int index = -1]) {
+  _openContactFormModal(BuildContext? context,
+      [String id = "", int index = -1, bool edition = true]) {
     final List<Contact> result = id.isEmpty ? [] : [widget.lista[index]];
 
     showModalBottomSheet(
-      context: context,
+      context: context!,
       builder: (_) {
         return ContactForm(
           onSubmit: _updateContact,
           listContact: result,
           index: index,
+          edition: edition,
         );
       },
     );

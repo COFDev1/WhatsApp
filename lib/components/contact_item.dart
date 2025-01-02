@@ -6,7 +6,7 @@ import 'package:whatsappcentral/models/contact.dart';
 class ContactItem extends StatelessWidget {
   final List<Contact> listContact;
   final void Function(String)? onRemove;
-  final void Function(BuildContext, String, int) onOpenForm;
+  final void Function(BuildContext, String, int, bool) onOpenForm;
 
   const ContactItem({
     required this.listContact,
@@ -34,7 +34,7 @@ class ContactItem extends StatelessWidget {
                 horizontal: 5,
               ),
               child: ListTile(
-                  onTap: () => onOpenForm(context, element.id, index),
+                  onTap: () => onOpenForm(context, element.id, index, true),
                   leading: Padding(
                     padding: const EdgeInsets.all(6),
                     child: FittedBox(
@@ -54,7 +54,8 @@ class ContactItem extends StatelessWidget {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     color: Theme.of(context).errorColor,
-                    onPressed: () => onRemove!(element.id),
+                    onPressed: () =>
+                        onOpenForm(context, element.id, index, false),
                   )),
             );
           },
