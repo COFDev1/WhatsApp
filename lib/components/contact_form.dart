@@ -36,11 +36,11 @@ class _ContactFormState extends State<ContactForm> {
     super.initState();
 
     options = loadOptionions();
+
+    dropdownValue = options.first;
   }
 
   void _editContact() {
-    // options = loadOptionions();
-
     dropdownValue = options.first;
 
     _lEdit = widget.edition;
@@ -112,8 +112,6 @@ class _ContactFormState extends State<ContactForm> {
 
   @override
   Widget build(BuildContext context) {
-    // options = loadOptionions();
-
     if (_lEdit && widget.listContact!.isNotEmpty) {
       _editContact();
     }
@@ -182,13 +180,11 @@ class _ContactFormState extends State<ContactForm> {
                     padding: const EdgeInsets.only(top: 5),
                     child: DropdownButtonFormField<String>(
                       value: dropdownValue,
-                      onChanged: !widget.edition
-                          ? null
-                          : (String? newValue) {
-                              setState(() {
-                                dropdownValue = newValue!;
-                              });
-                            },
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownValue = newValue!;
+                        });
+                      },
                       validator: (String? value) {
                         if ((value == options.first) && (widget.edition)) {
                           return "Opção inválida";
