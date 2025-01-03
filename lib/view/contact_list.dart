@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:whatsappcentral/components/contact_form.dart';
 import 'package:whatsappcentral/components/contact_item.dart';
@@ -57,22 +59,44 @@ class _ListContactsState extends State<ListContacts> {
     return allOk;
   }
 
-  Future<bool> _delete({String id = ""}) async {
+  Future<void> _delete({String id = ""}) async {
     final response = await http.delete(Uri.parse(url + "${id}"));
 
     allOk = response.statusCode == 200;
 
-    return allOk;
+    if (allOk) {
+      Navigator.of(context).pop();
+      _showDialogOk();
+      _removeContact(id);
+    }
   }
 
-  void _updateContact(String name, String phone, int index, String type,
-      String description, int operation) {
+  void _showDialogOk() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirmação"),
+          content: const Text("Operação realizada com sucesso!!!"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _updateContact(
+      Map<String, dynamic> details, int operation, BuildContext context) {
     final newContact = Contact(
-      id: widget.lista[index].id,
-      name: name,
-      phone: phone,
-      type: type,
-      description: description,
+      id: widget.lista[details["index"]].id,
+      name: details["name"],
+      phone: details["phone"],
+      type: details["type"],
+      description: details["description"],
     );
 
     switch (operation) {
@@ -81,16 +105,7 @@ class _ListContactsState extends State<ListContacts> {
       case 4:
         break;
       case 5:
-        FutureBuilder<bool>(
-          future: _delete(id: widget.lista[index].id),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data == false) {
-              return const CircularProgressIndicator();
-            } else {
-              return Text("Operação realizada com sucesso!!!!");
-            }
-          },
-        );
+        _delete(id: newContact.id);
 
         break;
       default:
