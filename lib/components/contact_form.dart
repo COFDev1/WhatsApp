@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
 class ContactForm extends StatefulWidget {
-  final void Function(String, String, int, String, String) onSubmit;
+  final void Function(String, String, int, String, String, int) onSubmit;
   final List<Contact>? listContact;
   final int? index;
-  final bool edition;
+  final int? operation;
 
   const ContactForm({
     required this.onSubmit,
-    required this.edition,
+    required this.operation,
     this.listContact,
     this.index,
     super.key,
@@ -22,6 +22,7 @@ class ContactForm extends StatefulWidget {
 
 class _ContactFormState extends State<ContactForm> {
   bool _lEdit = true;
+  bool _addEdit = false;
   String dropdownValue = "";
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -38,15 +39,17 @@ class _ContactFormState extends State<ContactForm> {
     options = loadOptionions();
 
     dropdownValue = options.first;
+    _addEdit = (widget.operation == 3 || widget.operation == 4);
   }
 
   void _editContact() {
     dropdownValue = options.first;
 
-    _lEdit = widget.edition;
+    _lEdit = widget.operation == 3 || widget.operation == 4;
     _nameController.text = widget.listContact![0].name;
     _phoneController.text = widget.listContact![0].phone;
     _typeContactController.text = widget.listContact![0].type;
+    _descriptionContactController.text = widget.listContact![0].description;
     _descriptionContactController.text = widget.listContact![0].description;
 
     int position = options.indexWhere(
@@ -76,6 +79,7 @@ class _ContactFormState extends State<ContactForm> {
     final String phone = _phoneController.text;
     final String type = _typeContactController.text;
     final String description = _descriptionContactController.text;
+    final int operation = widget.operation!;
 
     final isValid = _formKey.currentState?.validate() ?? false;
 
@@ -87,15 +91,16 @@ class _ContactFormState extends State<ContactForm> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: Text(
-          widget.edition ? "Gravação" : "Exclusão",
-          style: TextStyle(color: widget.edition ? Colors.black : Colors.red),
+          _addEdit ? "Gravação" : "Exclusão",
+          style: TextStyle(color: _addEdit ? Colors.black : Colors.red),
         ),
         content: const Text("Deseja confirmar a operação ?"),
         actions: <Widget>[
           TextButton(
             onPressed: () {
               Navigator.pop(context, 'OK');
-              widget.onSubmit(name, phone, widget.index!, type, description);
+              widget.onSubmit(
+                  name, phone, widget.index!, type, description, operation);
             },
             child: const Text("OK"),
           ),
@@ -132,18 +137,18 @@ class _ContactFormState extends State<ContactForm> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  readOnly: !widget.edition,
+                  readOnly: !_addEdit,
                   decoration: const InputDecoration(labelText: "Nome"),
                   // textInputAction: TextInputAction.next,
                   maxLength: 30,
                   validator: (value) {
                     final name = value ?? '';
 
-                    if ((name.trim().isEmpty) && (widget.edition)) {
+                    if ((name.trim().isEmpty) && (_addEdit)) {
                       return "Nome é obrigatório.";
                     }
 
-                    if ((name.trim().length < 3) && (widget.edition)) {
+                    if ((name.trim().length < 3) && (_addEdit)) {
                       return "Nome precisa no mínimo de 3 letras.";
                     }
 
@@ -152,7 +157,7 @@ class _ContactFormState extends State<ContactForm> {
                 ),
                 TextFormField(
                   controller: _phoneController,
-                  readOnly: !widget.edition,
+                  readOnly: !_addEdit,
                   decoration: const InputDecoration(
                     labelText: "Telefone", /*icon: Icon(Icons.phone)*/
                   ),
@@ -164,11 +169,11 @@ class _ContactFormState extends State<ContactForm> {
                   validator: (value) {
                     final phone = value ?? '';
 
-                    if ((phone.trim().isEmpty) && (widget.edition)) {
+                    if ((phone.trim().isEmpty) && (_addEdit)) {
                       return "Telefone é obrigatório.";
                     }
 
-                    if ((phone.trim().length < 11) && (widget.edition)) {
+                    if ((phone.trim().length < 11) && (_addEdit)) {
                       return "Telefone deve ter 11 dígitos.";
                     }
                     return null;
@@ -186,7 +191,7 @@ class _ContactFormState extends State<ContactForm> {
                         });
                       },
                       validator: (String? value) {
-                        if ((value == options.first) && (widget.edition)) {
+                        if ((value == options.first) && (_addEdit)) {
                           return "Opção inválida";
                         }
                         return null;
@@ -205,18 +210,18 @@ class _ContactFormState extends State<ContactForm> {
                   padding: const EdgeInsets.only(top: 5),
                   child: TextFormField(
                     controller: _descriptionContactController,
-                    readOnly: !widget.edition,
+                    readOnly: !_addEdit,
                     decoration: const InputDecoration(
                         labelText: "Descrição do Contato"),
                     maxLength: 30,
                     validator: (value) {
                       final description = value ?? '';
 
-                      if ((description.trim().isEmpty) && (widget.edition)) {
+                      if ((description.trim().isEmpty) && (_addEdit)) {
                         return "O preenchimento do campo Descrição do Contato é obrigatório.";
                       }
 
-                      if ((description.trim().length < 6) && (widget.edition)) {
+                      if ((description.trim().length < 6) && (_addEdit)) {
                         return "Descrição do Contato precisa ter,no mínimo, de 6 letras.";
                       }
 

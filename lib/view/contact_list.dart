@@ -23,7 +23,7 @@ class _ListContactsState extends State<ListContacts> {
   @override
   void initState() {
     super.initState();
-
+    print("Pasou aqui agora");
     _list();
   }
 
@@ -51,113 +51,62 @@ class _ListContactsState extends State<ListContacts> {
               description: element["descricao"]),
         );
       });
-
+      print("Lista de itens: ${widget.lista}");
       setState(() {});
     }
     return allOk;
   }
 
-  Future<bool> delete({String id = ""}) async {
+  Future<bool> _delete({String id = ""}) async {
     final response = await http.delete(Uri.parse(url + "${id}"));
 
     allOk = response.statusCode == 200;
 
-    If(allOk) {
-      setState(() {
-        widget.lista.removeWhere((element) => element.id == id);
-      });
-    }
-
     return allOk;
   }
 
-  Future<bool> _updateDataContactApi(
-      {int type = 1, Map<String, dynamic>? req}) async {
-    // bool allOk = false;
-
-    Map<String, String> structDefault = {
-      'Content-Type': 'application/json',
-    };
-
-    // var url = "http://192.168.10.101:3001/contatos/";
-
-    widget.lista = [];
-
-    switch (type) {
-      case 1:
-        final response = await http.get(Uri.parse(url));
-
-        // allOk = response.statusCode == 200;
-
-        // if (allOk) {
-        var data = jsonDecode(response.body);
-
-        //   data.forEach((element) {
-        //     widget.lista.add(Contact(
-        //       id: element["id"],
-        //       name: element["name"],
-        //       phone: element["phone"],
-        //     ));
-        //   });
-
-        //   setState(() {});
-        // }
-        break;
-
-      case 2:
-        var resBody = {};
-        resBody["name"] = "Carlinho da Silva";
-        resBody["phone"] = "27999405610";
-        resBody["tipo"] = "Celular";
-        resBody["descricao"] = "Secretaria";
-
-        print(jsonEncode(resBody));
-
-        // final response = await http.put(Uri.parse(url + "9"), body: jsonEncode(resBody));
-        final response =
-            await http.post(Uri.parse(url), body: jsonEncode(resBody));
-
-        allOk = response.statusCode == 200 || response.statusCode == 201;
-
-        if (allOk) {
-          var data = jsonDecode(response.body);
-          print("Retorno ${response.body}");
-        }
-        break;
-
-      case 3:
-        final response = await http.delete(Uri.parse(url));
-
-        allOk = response.statusCode == 200;
-
-        if (allOk) {
-          setState(() {});
-        }
-        break;
-    }
-    return allOk;
-  }
-
-  void _updateContact(
-      String name, String phone, int index, String type, String description) {
+  void _updateContact(String name, String phone, int index, String type,
+      String description, int operation) {
     final newContact = Contact(
-      id: Random().nextDouble().toString(),
+      id: widget.lista[index].id,
       name: name,
       phone: phone,
       type: type,
       description: description,
     );
 
-    if (index != -1) {
-      setState(() {
-        widget.lista[index] = newContact;
-      });
-    } else {
-      setState(() {
-        widget.lista.insert(0, newContact);
-      });
+    switch (operation) {
+      case 3:
+        break;
+      case 4:
+        break;
+      case 5:
+        FutureBuilder<bool>(
+          future: _delete(id: widget.lista[index].id),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.data == false) {
+              return const CircularProgressIndicator();
+            } else {
+              return Text("Operação realizada com sucesso!!!!");
+            }
+          },
+        );
+
+        break;
+      default:
+        // statementn;
+        break;
     }
-    Navigator.of(context).pop();
+    // if (index != -1) {
+    //   setState(() {
+    //     widget.lista[index] = newContact;
+    //   });
+    // } else {
+    //   setState(() {
+    //     widget.lista.insert(0, newContact);
+    //   });
+    // }
+    // Navigator.of(context).pop();
   }
 
   _removeContact(String id) {
@@ -167,7 +116,7 @@ class _ListContactsState extends State<ListContacts> {
   }
 
   _openContactFormModal(BuildContext? context,
-      [String id = "", int index = -1, bool edition = true]) {
+      [String id = "", int index = -1, int operation = 3]) {
     final List<Contact> result = id.isEmpty ? [] : [widget.lista[index]];
 
     showModalBottomSheet(
@@ -177,7 +126,7 @@ class _ListContactsState extends State<ListContacts> {
           onSubmit: _updateContact,
           listContact: result,
           index: index,
-          edition: edition,
+          operation: operation,
         );
       },
     );
