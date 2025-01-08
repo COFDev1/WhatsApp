@@ -75,10 +75,6 @@ class _ContactFormState extends State<ContactForm> {
   }
 
   _submitForm(Map<String, dynamic> detailsContact) {
-    final String name = _nameController.text;
-    final String phone = _phoneController.text;
-    final String type = _typeContactController.text;
-    final String description = _descriptionContactController.text;
     final int operation = widget.operation!;
 
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -238,8 +234,8 @@ class _ContactFormState extends State<ContactForm> {
                         detail["index"] = widget.index;
                         detail["name"] = _nameController.text;
                         detail["phone"] = _phoneController.text;
-                        detail["type"] = _typeContactController.text;
-                        detail["description"] =
+                        detail["tipo"] = dropdownValue;
+                        detail["descricao"] =
                             _descriptionContactController.text;
 
                         _submitForm(detail);

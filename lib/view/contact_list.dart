@@ -1,12 +1,11 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:http/retry.dart';
 import 'package:whatsappcentral/components/contact_form.dart';
 import 'package:whatsappcentral/components/contact_item.dart';
 import 'package:whatsappcentral/models/contact.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math';
 
 class ListContacts extends StatefulWidget {
   List<Contact> lista = [];
@@ -25,7 +24,6 @@ class _ListContactsState extends State<ListContacts> {
   @override
   void initState() {
     super.initState();
-    print("Pasou aqui agora");
     _list();
   }
 
@@ -53,10 +51,48 @@ class _ListContactsState extends State<ListContacts> {
               description: element["descricao"]),
         );
       });
-      print("Lista de itens: ${widget.lista}");
       setState(() {});
     }
     return allOk;
+  }
+
+  Future<void> _add(
+      {Map<String, dynamic>? contact, Contact? newContact}) async {
+    var response = await http.post(Uri.parse(url), body: jsonEncode(contact));
+
+    allOk = response.statusCode == 200 || response.statusCode == 201;
+
+    if (allOk) {
+      String newId = jsonDecode(response.body)["id"];
+
+      newContact!.id = newId;
+
+      Navigator.of(context).pop();
+      _showDialogOk();
+      setState(() {
+        widget.lista.insert(0, newContact!);
+      });
+    }
+  }
+
+  Future<void> _edit(
+      {Map<String, dynamic>? contact,
+      Contact? newContact,
+      String id = ""}) async {
+    var response =
+        await http.put(Uri.parse(url + "$id"), body: jsonEncode(contact));
+
+    allOk = response.statusCode == 200 || response.statusCode == 201;
+
+    if (allOk) {
+      Navigator.of(context).pop();
+      _showDialogOk();
+      setState(() {
+        int position = widget.lista.indexWhere((element) => element.id == id);
+
+        widget.lista[position] = newContact!;
+      });
+    }
   }
 
   Future<void> _delete({String id = ""}) async {
@@ -69,6 +105,12 @@ class _ListContactsState extends State<ListContacts> {
       _showDialogOk();
       _removeContact(id);
     }
+  }
+
+  Future<void> _validInsert(String phone) async {
+    Map<String, String> listPhone = Map();
+
+    listPhone["phone"] = "27988898998";
   }
 
   void _showDialogOk() {
@@ -89,39 +131,60 @@ class _ListContactsState extends State<ListContacts> {
     );
   }
 
+  void _showDialogErro() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Erro"),
+          content: const Text(
+            "Falha ao efetivar a operação!!!",
+            style: TextStyle(color: Colors.red),
+          ),
+
+          // style: TextStyle(color: Colors.red)
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _updateContact(
       Map<String, dynamic> details, int operation, BuildContext context) {
-    final newContact = Contact(
-      id: widget.lista[details["index"]].id,
-      name: details["name"],
-      phone: details["phone"],
-      type: details["type"],
-      description: details["description"],
-    );
+    final String id =
+        details["index"] != -1 ? widget.lista[details["index"]].id : "";
+
+    details.remove("index");
 
     switch (operation) {
       case 3:
-        break;
       case 4:
+        final Contact newContact = Contact(
+          id: id,
+          name: details["name"],
+          phone: details["phone"],
+          type: details["tipo"],
+          description: details["descricao"],
+        );
+
+        operation == 3
+            ? _add(contact: details, newContact: newContact)
+            : _edit(contact: details, newContact: newContact, id: id);
         break;
+
       case 5:
-        _delete(id: newContact.id);
+        _delete(id: id);
 
         break;
       default:
         // statementn;
         break;
     }
-    // if (index != -1) {
-    //   setState(() {
-    //     widget.lista[index] = newContact;
-    //   });
-    // } else {
-    //   setState(() {
-    //     widget.lista.insert(0, newContact);
-    //   });
-    // }
-    // Navigator.of(context).pop();
   }
 
   _removeContact(String id) {
@@ -132,7 +195,8 @@ class _ListContactsState extends State<ListContacts> {
 
   _openContactFormModal(BuildContext? context,
       [String id = "", int index = -1, int operation = 3]) {
-    final List<Contact> result = id.isEmpty ? [] : [widget.lista[index]];
+    // final List<Contact> result = id.isEmpty ? [] : [widget.lista[index]];
+    final List<Contact> result = index != -1 ? [widget.lista[index]] : [];
 
     showModalBottomSheet(
       context: context!,
