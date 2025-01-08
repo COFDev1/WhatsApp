@@ -45,6 +45,7 @@ class ControlaUsuario {
     );
 
     try {
+      print('value: $response');
       if (response.statusCode == 200) {
         final seller = jsonDecode(response.body);
 
@@ -52,8 +53,10 @@ class ControlaUsuario {
 
         return jsonDecode(response.body)["seller"].toString();
       }
-    } catch (e) {
-      return ("Usuário/senha inválido: $e");
+    } catch (err) {
+      print("Erroretornado $err");
+
+      return ("Usuário/senha inválido: $err");
     }
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:whatsappcentral/models/contact.dart';
 
 class ContactForm extends StatefulWidget {
-  final void Function(String, String, int, String, String, int) onSubmit;
+  final void Function(Map<String, dynamic>, int, BuildContext) onSubmit;
   final List<Contact>? listContact;
   final int? index;
   final int? operation;
@@ -74,11 +74,7 @@ class _ContactFormState extends State<ContactForm> {
     return options;
   }
 
-  _submitForm() {
-    final String name = _nameController.text;
-    final String phone = _phoneController.text;
-    final String type = _typeContactController.text;
-    final String description = _descriptionContactController.text;
+  _submitForm(Map<String, dynamic> detailsContact) {
     final int operation = widget.operation!;
 
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -87,7 +83,7 @@ class _ContactFormState extends State<ContactForm> {
       return;
     }
 
-    showDialog<String>(
+    showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: Text(
@@ -99,8 +95,7 @@ class _ContactFormState extends State<ContactForm> {
           TextButton(
             onPressed: () {
               Navigator.pop(context, 'OK');
-              widget.onSubmit(
-                  name, phone, widget.index!, type, description, operation);
+              widget.onSubmit(detailsContact, operation, context);
             },
             child: const Text("OK"),
           ),
@@ -233,7 +228,18 @@ class _ContactFormState extends State<ContactForm> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     ElevatedButton(
-                      onPressed: _submitForm,
+                      onPressed: () {
+                        Map<String, dynamic> detail = Map();
+
+                        detail["index"] = widget.index;
+                        detail["name"] = _nameController.text;
+                        detail["phone"] = _phoneController.text;
+                        detail["tipo"] = dropdownValue;
+                        detail["descricao"] =
+                            _descriptionContactController.text;
+
+                        _submitForm(detail);
+                      },
                       child: const Text("Gravar"),
                     ),
                   ],
